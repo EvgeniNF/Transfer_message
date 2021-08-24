@@ -7,11 +7,12 @@
 
 #include "data.hpp"
 #include <vector>
+#include <string>
 
-class Data_gen{
+class Data_gen : Person{
 public:
     /*
-     * Конструктор
+     * Конструктор по умолчанию
      */
     Data_gen();
     /*
@@ -28,18 +29,38 @@ public:
      * Деструктор
      */
     ~Data_gen() = default;
-    /*
-     * Генерация данных
+    /* Генерация новой персоны
+     * @return - Person
      */
-    Person gen_data();
-    /* Функция add
-     * Добовляет новое имя в список
+    Person get_person() override;
+    /* Метод add
+     * Добовляет новое имя, если его нет еще в списке,
+     * если имя уже существует, возвращает false, иначе true
+     * @name - новое имя
+     * @return - bool
      */
-    void add_num_names(const std::string &name);
-    /* Функция add
-     * Добовляет новую фамилию в список
+    bool add_names(const std::string &name);
+    /* Метод add
+     * Добовляет новую фамилию, если её нет еще в списке,
+     * если фамилия уже существует, возвращает false, иначе true
+     * @surname - новая фамилия
+     * @return - bool
      */
-    void add_num_surnames(const std::string &surname);
+    bool add_surnames(const std::string &surname);
+    /* Метод del
+     * Удаляет имя из списка имен, если такого имени нет
+     * возвращает false, иначе true
+     * @name - удаляемое имя
+     * @return - bool
+     */
+    bool del_name(const std::string &name);
+    /* Метод del
+     * Удаляет фамилию из списка имен, если такой фамилии нет
+     * возвращает false, иначе true
+     * @name - удаляемое имя
+     * @return - bool
+     */
+    bool del_surname(const std::string &surname);
 
 private:
     std::vector<std::string> names = { "Rodriges", "Rodslav", "Roso", "Olivia", "Ava", "Emeli", "Poppy", "Mia", "Isla",
@@ -47,6 +68,7 @@ private:
     std::vector<std::string> surnames = { "Adamson", "Evans", "Jonson", "Davies", "Wilson", "Parson", "Elington",
         "Gilbert", "Flatcher" };
     int num_names {};
+    int num_surnames {};
     int max_age {};
 };
 
