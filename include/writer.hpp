@@ -75,6 +75,10 @@ public:
      * @return - bool
      */
     [[maybe_unused]] bool del_category(const std::string &category);
+    /*
+     * Интерфейсный метод
+     */
+    virtual void send_data() = 0;
 
 private:
     std::vector<std::string> names = { "Rodriges", "Rodslav", "Roso", "Olivia", "Ava", "Emeli", "Poppy", "Mia", "Isla",

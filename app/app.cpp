@@ -1,11 +1,13 @@
 #include <iostream>
 #include "transfer.hpp"
-
-
+#include <vector>
+#include <string>
 
 int main(){
-    transfer::run();
-    std::cout << "hello world" << std::endl;
+
+    std::vector<std::string> categories = {"Boss", "Worker"};
+    Transfer t(categories);
+    t.run();
     system("pause");
     return 0;
 }

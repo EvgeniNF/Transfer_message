@@ -4,32 +4,52 @@
 
 #include "transfer.hpp"
 
-void transfer::write_data(Writer &w, Buffer &b, bool &stop) {
-    for (int i = 0; i < 40; i++){
-        b.write_buff(w.get_person());
-    }
-    stop = true;
-}
 
-void transfer::read_data(Reader &r, Buffer &b, bool &stop) {
-    while (!stop){
-        int id = b.find_data(r.get_category());
-        if (id != -1){
-            r.add_human(b.get_person(id));
-        }
+Transfer::Transfer(const std::vector<std::string> &c) {
+    for (auto &i : c) {
+        this->data.extract(i);
     }
 }
 
-void transfer::run() {
-    bool stop = false;
-    Buffer buff;
-    Writer wrt;
-    Reader r_1("Boss"), r_2("Worker");
-    std::thread th_wr(write_data, std::ref(wrt), std::ref(buff), std::ref(stop));
-    std::thread th_r1(read_data, std::ref(r_1), std::ref(buff), std::ref(stop));
-    std::thread th_r2(read_data, std::ref(r_2), std::ref(buff), std::ref(stop));
+void Transfer::write_data() {
+    for (int i = 0; i <= 10; i++) {
+        Buffer::send_data();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
 
+void Transfer::read_data(const std::string &c) {
+    // Поиск данных
+    int id = find_data(c);
+    // Заполнение
+    if (id != -1) {
+        Person np = get_pers(id);
+        std::lock_guard<std::recursive_mutex> lg(this->io_mt);
+        this->data.at(c).push_back(Humans_data(np.get_name(), np.get_surname(), np.get_age()));
+        this->show_data(c);
+    }
+}
+
+void Transfer::show_data(const std::string &c) const {
+    // Блокировка для вывода данных
+    std::lock_guard<std::recursive_mutex> lg(this->io_mt);
+    // Вывод данных
+    auto el = static_cast<unsigned long int>(this->data.at(c).size()) - 1;
+    std::cout << "This thread id: " << std::this_thread::get_id();
+    std::cout << " | " << "Category: " << c;
+    std::cout << " | " << "Name: " << this->data.at(c).at(el).name;
+    std::cout << " | " << "Surname: " << this->data.at(c).at(el).surname;
+    std::cout << " | " << "Age: " << this->data.at(c).at(el).age;
+    std::cout << " | " << "Number operation: " << el + 1 << std::endl;
+}
+
+void Transfer::run() {
+    std::thread th_wr([this]() { write_data(); });
+    std::thread th_rd_1;
+    std::thread th_rd_2;
     th_wr.join();
-    th_r1.join();
-    th_r2.join();
+    th_rd_1.join();
+    th_rd_2.join();
 }
+
+

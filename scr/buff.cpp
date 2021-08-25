@@ -12,16 +12,16 @@ Buffer::Buffer(Buffer &&buffer) noexcept {
     this->persons = buffer.persons;
 }
 
-void Buffer::write_buff(const Person &p) {
+void Buffer::send_data() {
     // Блокировка на запись
-    std::unique_lock<std::shared_mutex> ul(this->rw_mt);
+    std::unique_lock ul(this->rw_mt);
     // Добавление данных в буфер
-    this->persons.push_back(p);
+    this->persons.push_back(this->get_person());
 }
 
-Person Buffer::get_person(const int &id) {
+Person Buffer::get_pers(const int &id) {
     // Блокировка на чтение
-    std::shared_lock<std::shared_mutex> sl(this->rw_mt);
+    std::shared_lock sl(this->rw_mt);
     // Копирование данных
     Person a(this->persons.at(id));
     // Удаление считанных данных
@@ -31,7 +31,7 @@ Person Buffer::get_person(const int &id) {
 
 int Buffer::find_data(const std::string &c) {
     // Блокировка на чтение
-    std::shared_lock<std::shared_mutex> sl(this->rw_mt);
+    std::shared_lock sl(this->rw_mt);
     // Определение размера буфера
     int size = this->persons.size();
     // Поиск данных

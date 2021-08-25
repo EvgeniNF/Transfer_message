@@ -6,10 +6,12 @@
 #define MASSAGE_TRANSFER_INCLUDE_BUFF_HPP_
 
 #include "data.hpp"
+#include "writer.hpp"
 #include <vector>
 #include <shared_mutex>
+#include "reader.hpp"
 
-class Buffer {
+class Buffer : public Writer {
 public:
     /*
      * Конструктор по умолчанию
@@ -30,7 +32,7 @@ public:
     /*
      * Запись данных
      */
-    void write_buff(const Person &p);
+    void send_data();
     /*
      * Поиск данных
      */
@@ -38,7 +40,11 @@ public:
     /*
      * Получение данных
      */
-    Person get_person(const int &id);
+    Person get_pers(const int &id);
+    /*
+     * Интерфейсный метод
+     */
+    virtual void read_data(const std::string &c) = 0;
 
 private:
     std::vector<Person> persons{}; // Буфер
