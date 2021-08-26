@@ -1,6 +1,3 @@
-//
-// Created by User on 25.08.2021.
-//
 
 #ifndef MASSAGE_TRANSFER_INCLUDE_BUFF_HPP_
 #define MASSAGE_TRANSFER_INCLUDE_BUFF_HPP_
@@ -9,8 +6,11 @@
 #include "writer.hpp"
 #include <vector>
 #include <shared_mutex>
-#include "reader.hpp"
 
+/*
+ * Класс Buffer,
+ * является буфером обмена
+ */
 class Buffer : public Writer {
 public:
     /*
@@ -20,25 +20,37 @@ public:
     /*
      * Конструктор копирования
      */
-    Buffer(Buffer &buffer);
+    [[maybe_unused]] Buffer(Buffer &buffer);
     /*
      * Конструктор перемещения
      */
-    Buffer(Buffer &&buffer) noexcept;
+    [[maybe_unused]] Buffer(Buffer &&buffer) noexcept;
     /*
-     * Деструктор по умолчанию
+     * Виртуальный деструктор
      */
-    ~Buffer() = default;
+    virtual ~Buffer() = default;
     /*
-     * Запись данных
+     * Метод send_data
+     * Записывает данные в буфер
      */
     void send_data();
     /*
-     * Поиск данных
+     * Метод find_data
+     * Выполняет поиск по категории,
+     * Если персона не найдена возвращает -1
+     * @c - Категория
      */
-    int find_data(const std::string &c);
+    [[nodiscard]] int find_data(const std::string &c);
     /*
-     * Получение данных
+     * Метод delete_data
+     * Выполняет удаление персоны из буфера
+     * @id - Номер элемента в векторе
+     */
+    void delete_data(const int &id);
+    /*
+     * Метод get_pers
+     * Возвращает персону из вектора
+     * @id - Номер элемента в векторе
      */
     Person get_pers(const int &id);
     /*
@@ -48,7 +60,7 @@ public:
 
 private:
     std::vector<Person> persons{}; // Буфер
-    std::shared_mutex rw_mt;
+    std::shared_mutex rw_mt; // Барьер чтения записи в буфер
 };
 
 #endif //MASSAGE_TRANSFER_INCLUDE_BUFF_HPP_

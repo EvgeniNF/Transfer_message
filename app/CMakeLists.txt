@@ -11,6 +11,9 @@ find_package(Threads REQUIRED)
 #---------------------Добавление исполняемго файла -------------------#
 add_executable(${PROJECT}
         ${PROJECT_SOURCE})
+#---------------------Добавление файла данных ------------------------#
+file(COPY ${PROJECT_SOURCE_DIR}/data_files/data.txt
+        DESTINATION ${CMAKE_BINARY_DIR}/app)
 #---------------------------------------------------------------------#
 #--------------------------Линковка библиотек ------------------------#
 target_link_libraries(${PROJECT} datagen)

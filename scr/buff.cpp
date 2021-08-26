@@ -1,14 +1,11 @@
-//
-// Created by User on 25.08.2021.
-//
 
 #include "buff.hpp"
 
-Buffer::Buffer(Buffer &buffer) {
+[[maybe_unused]] Buffer::Buffer(Buffer &buffer) {
     this->persons = buffer.persons;
 }
 
-Buffer::Buffer(Buffer &&buffer) noexcept {
+[[maybe_unused]] Buffer::Buffer(Buffer &&buffer) noexcept {
     this->persons = buffer.persons;
 }
 
@@ -20,16 +17,14 @@ void Buffer::send_data() {
 }
 
 Person Buffer::get_pers(const int &id) {
-    // Блокировка на чтение
+    // Блокировка на запись чтение
     std::shared_lock sl(this->rw_mt);
     // Копирование данных
     Person a(this->persons.at(id));
-    // Удаление считанных данных
-    this->persons.erase(this->persons.begin() + id);
     return a;
 }
 
-int Buffer::find_data(const std::string &c) {
+[[nodiscard]] int Buffer::find_data(const std::string &c) {
     // Блокировка на чтение
     std::shared_lock sl(this->rw_mt);
     // Определение размера буфера
@@ -43,4 +38,9 @@ int Buffer::find_data(const std::string &c) {
     return -1;
 }
 
-
+void Buffer::delete_data(const int &id) {
+    // Блокировка на запись чтение
+    std::unique_lock ul(this->rw_mt);
+    // Очистка буфера
+    this->persons.erase(this->persons.begin() + id);
+}

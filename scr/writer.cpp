@@ -1,9 +1,5 @@
-//
-// Created by User on 24.08.2021.
-//
 
 #include "writer.hpp"
-#include "iostream"
 
 Writer::Writer() {
     // Подсчет количества имен
@@ -12,8 +8,6 @@ Writer::Writer() {
     this->num_surnames = static_cast<int> (this->surnames.size());
     // Подсчет количества категорий
     this->num_categories = static_cast<int> (this->categories.size());
-    // установка максимального количества лет
-    this->max_age = 110;
 }
 
 [[maybe_unused]] bool Writer::add_category(const std::string &category) {
@@ -22,7 +16,7 @@ Writer::Writer() {
         if (*i == category) { return false; }
     }
     // Добовление категории
-    this->surnames.push_back(category);
+    this->categories.push_back(category);
     this->num_categories++;
     return true;
 }
@@ -45,7 +39,7 @@ Writer::Writer() {
         if (*i == name) { return false; }
     }
     // Добовление имение
-    this->surnames.push_back(name);
+    this->names.push_back(name);
     this->num_names++;
     return true;
 }
@@ -97,9 +91,49 @@ Person Writer::get_person() {
     return Person(name, surname, category, age);
 }
 
-
-
-
-
-
-
+bool Writer::read_data_from_time(const std::string &path) {
+    std::ifstream in_str(path);
+    std::string line;
+    if (in_str.is_open()){
+        int lines = 0;
+        std::vector<std::string> pointers;
+        while(std::getline(in_str, line)){
+            if (lines == 0){
+                // Поиск ключевых слов
+                for (int i = 0; i < 2; i++){
+                    auto pos = line.find(";");
+                    if(pos == std::string::npos) {
+                        in_str.close();
+                        return false;
+                    }
+                    else{
+                        pointers.push_back(line.substr(0, pos));
+                        line.erase(0, pos + 1);
+                    }
+                }
+            }
+            else{
+                // Заполнение данных
+                auto dev = line.find(":");
+                std::string c = line.substr(0, dev);
+                std::string data = line.substr(dev + 1, line.length() - 1);
+                if (c == pointers.at(0)){
+                    this->add_names(data);
+                }
+                else if (c == pointers.at(1)){
+                    this->add_surnames(data);
+                }
+                else {
+                    in_str.close();
+                    return false;
+                }
+            }
+            lines++;
+        }
+    }
+    else {
+        return false;
+    }
+    in_str.close();
+    return true;
+}
