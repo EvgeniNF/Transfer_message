@@ -25,14 +25,14 @@ void Transfer::write_data() {
     // Запись данных в буфер
     for (int i = 0; i < this->num_transfers; i++) {
         this->send_data();
-        std::this_thread::sleep_for(std::chrono::milliseconds(this->time_delay_ms));
+        std::this_thread::sleep_for(std::chrono::milliseconds (this->time_delay_ms));
     }
     // Остановка операций чтения
     this->stop.set_value(true);
 }
 
 void Transfer::read_data(const std::string &c) {
-    while (this->end_transfer.wait_for(std::chrono::seconds(0)) != std::future_status::ready){
+    while (true){
         // Поиск данных
         int id = this->find_data(c);
         // Заполнение
@@ -43,6 +43,9 @@ void Transfer::read_data(const std::string &c) {
             this->data.at(c).push_back(Humans_data(np.get_name(), np.get_surname(), np.get_age()));
             this->show_data(c);
         }
+        else if (this->end_transfer.wait_for(std::chrono::seconds(0)) == std::future_status::ready){
+            break;
+        }
     }
 }
 
@@ -51,7 +54,7 @@ void Transfer::show_data(const std::string &c) const {
     std::lock_guard<std::recursive_mutex> lg(this->io_mt);
     // Вывод данных
     auto el = static_cast<unsigned long int>(this->data.at(c).size()) - 1;
-    std::cout << "This thread id: " << std::this_thread::get_id();
+    std::cout << "-- This thread id: " << std::this_thread::get_id();
     std::cout << " | " << "Category: " << c;
     std::cout << " | " << "Name: " << this->data.at(c).at(el).name;
     std::cout << " | " << "Surname: " << this->data.at(c).at(el).surname;
